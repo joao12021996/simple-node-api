@@ -8,6 +8,10 @@ const app = express();
 const port = process.env.PORT || "1337";
 app.set("port", port);
 
+const cors = require('cors');
+app.use(cors({
+    origin: '*'
+}));
 app.use('/', routes);
 
 // Server
