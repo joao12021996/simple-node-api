@@ -9,12 +9,9 @@ const userGame = new Map()
 const router = express.Router();
 
 router.get("/newgame", function(req, res) {
-  console.log(req.query)
-
   const currentUser = req.query.name
 
   if(users.get(currentUser) !== undefined){
-    console.log(userGame)
     return res.json([
       { 
         response: 'go',
@@ -71,7 +68,6 @@ router.get("/addguess", function(req, res) {
 });
 
 router.get("/getguess", function(req, res) {
-  console.log(userGame.get(req.query.name).get('guesses'))
   res.json([
     {
       response: 'ok',
@@ -88,6 +84,33 @@ router.get("/onlineplayers", function(req, res){
   ])
 })
 
+router.get("/endgame", function(req, res) {
+  console.log(req.query)
+  console.log('endgame')
+
+  const currentUser = req.query.name
+
+  if(users.get(currentUser) === undefined){
+    return res.json([
+      { 
+        response: '404 no-user',
+      }
+    ])
+  }
+  
+  users.delete(currentUser)
+  userGame.delete(currentUser)
+
+  if(!userWaitList.includes(currentUser)){
+    userWaitList.push(currentUser)
+  }
+
+  return res.json([
+    { 
+      response: 'ok'
+    }
+  ])
+});
 
 
 module.exports = router;
