@@ -8,9 +8,11 @@ const userGame = new Map()
 
 const router = express.Router();
 
-router.get("/newgame", function(req, res) {
-  const currentUser = req.query.name
+router.get("/newgame", function(req, res) { 
+  console.log('newgame')
+  console.log(userWaitList)
 
+  const currentUser = req.query.name
   if(users.get(currentUser) !== undefined){
     return res.json([
       { 
@@ -34,7 +36,7 @@ router.get("/newgame", function(req, res) {
       users.set(currentUser, user)
 
       const gameMap = new Map() 
-      gameMap.set('gameDate', new Date(Math.floor((Math.random() * 2) * Date.now())))
+      gameMap.set('gameDate', new Date(Math.floor((Math.random() * 2) * Date.now())).getTime())
       gameMap.set('guesses', [])
 
       //shared on purpose since they belong to the same game
@@ -51,12 +53,13 @@ router.get("/newgame", function(req, res) {
       ])
     }
   }
-  console.log(userWaitList)
 
   res.json(wait);
 });
 
 router.get("/addguess", function(req, res) {
+  console.log('addguess')
+
   const currentUser = req.query.name
   const guess = req.query.guess
 
@@ -68,6 +71,16 @@ router.get("/addguess", function(req, res) {
 });
 
 router.get("/getguess", function(req, res) {
+  console.log('getguess')
+
+  if(userGame.get(req.query.name) === undefined){
+    res.json([
+      {
+        response: '404'
+      }
+    ])
+  }
+
   res.json([
     {
       response: 'ok',
@@ -77,6 +90,8 @@ router.get("/getguess", function(req, res) {
 });
 
 router.get("/onlineplayers", function(req, res){
+  console.log('onlineplayers')
+
   return res.json([
     {
       size: userWaitList.length
@@ -85,7 +100,6 @@ router.get("/onlineplayers", function(req, res){
 })
 
 router.get("/endgame", function(req, res) {
-  console.log(req.query)
   console.log('endgame')
 
   const currentUser = req.query.name
@@ -93,7 +107,7 @@ router.get("/endgame", function(req, res) {
   if(users.get(currentUser) === undefined){
     return res.json([
       { 
-        response: '404 no-user',
+        response: '404',
       }
     ])
   }
