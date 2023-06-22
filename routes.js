@@ -36,7 +36,7 @@ router.get("/newgame", function(req, res) {
       users.set(currentUser, user)
 
       const gameMap = new Map() 
-      gameMap.set('gameDate', new Date(Math.floor((Math.random() * 2) * Date.now())).toDateString())
+      gameMap.set('gameDate', new Date(Math.floor((Math.random() * 2) * Date.now())))
       gameMap.set('guesses', [])
 
       console.log(gameMap.get('gameDate'))
