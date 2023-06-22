@@ -42,7 +42,7 @@ router.get("/newgame", function(req, res) {
 
       const date = fns.startOfDay(new Date(Math.floor((Math.random() * 2) * Date.now())))
       const gameMap = new Map() 
-      gameMap.set('gameDate', date.toLocaleDateString())
+      gameMap.set('gameDate', date.getFullYear() + '/' + (date.getMonth() + 1) + '/' + date.getDay())
       gameMap.set('guesses', [])
 
       console.log(gameMap.get('gameDate'))
