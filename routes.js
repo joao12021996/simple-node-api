@@ -1,6 +1,7 @@
 const express = require('express');
 const wait = require("./json/wait");
 const ok = require("./json/ok");
+const fns = require('date-fns')
 
 const userWaitList = []
 const users = new Map()
@@ -35,8 +36,10 @@ router.get("/newgame", function(req, res) {
       users.set(user, currentUser)
       users.set(currentUser, user)
 
+
+      const date = fns.startOfDay(new Date(Math.floor((Math.random() * 2) * Date.now())))
       const gameMap = new Map() 
-      gameMap.set('gameDate', new Date(Math.floor((Math.random() * 2) * Date.now())))
+      gameMap.set('gameDate', date.toLocaleDateString())
       gameMap.set('guesses', [])
 
       console.log(gameMap.get('gameDate'))
