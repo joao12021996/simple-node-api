@@ -39,6 +39,8 @@ router.get("/newgame", function(req, res) {
       gameMap.set('gameDate', new Date(Math.floor((Math.random() * 2) * Date.now())).toDateString())
       gameMap.set('guesses', [])
 
+      console.log(gameMap.get('gameDate'))
+
       //shared on purpose since they belong to the same game
       userGame.set(user, gameMap)
       userGame.set(currentUser, gameMap)
@@ -81,6 +83,7 @@ router.get("/getguess", function(req, res) {
     ])
   }
 
+  console.log(userGame.get(req.query.name))
   res.json([
     {
       response: 'ok',
