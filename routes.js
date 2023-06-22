@@ -5,6 +5,7 @@ const fns = require('date-fns')
 
 const userWaitList = []
 const users = new Map()
+const customUsers = new Map()
 const userGame = new Map()
 
 const router = express.Router();
@@ -14,11 +15,13 @@ router.get("/newgame", function(req, res) {
   console.log(userWaitList)
 
   const currentUser = req.query.name
+  const currentUserCustom = req.query.customname
+
   if(users.get(currentUser) !== undefined){
     return res.json([
       { 
         response: 'go',
-        opponent: users.get(currentUser),
+        opponent: customUsers.get(users.get(currentUser)),
         gameDate: userGame.get(currentUser).get('gameDate')
       }
     ])
@@ -26,6 +29,7 @@ router.get("/newgame", function(req, res) {
 
   if(!userWaitList.includes(currentUser)){
     userWaitList.push(currentUser)
+    customUsers.set(currentUser, currentUserCustom)
   }
   
   for(let user of userWaitList){
@@ -35,7 +39,6 @@ router.get("/newgame", function(req, res) {
 
       users.set(user, currentUser)
       users.set(currentUser, user)
-
 
       const date = fns.startOfDay(new Date(Math.floor((Math.random() * 2) * Date.now())))
       const gameMap = new Map() 
@@ -51,7 +54,7 @@ router.get("/newgame", function(req, res) {
       return res.json([
         { 
           response: 'go',
-          opponent: user,
+          opponent: customUsers.get(user),
           first: true,
           gameDate: gameMap.get('gameDate')
         }
