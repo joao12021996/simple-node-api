@@ -124,10 +124,6 @@ router.get("/endgame", function(req, res) {
   users.delete(currentUser)
   userGame.delete(currentUser)
 
-  if(!userWaitList.includes(currentUser)){
-    userWaitList.push(currentUser)
-  }
-
   return res.json([
     { 
       response: 'ok'
