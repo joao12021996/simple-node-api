@@ -22,7 +22,8 @@ router.get("/newgame", function(req, res) {
       { 
         response: 'go',
         opponent: customUsers.get(users.get(currentUser)),
-        gameDate: userGame.get(currentUser).get('gameDate')
+        gameDate: userGame.get(currentUser).get('gameDate'),
+        timestamp: userGame.get(currentUser).get('timestamp')
       }
     ])
   }
@@ -44,6 +45,7 @@ router.get("/newgame", function(req, res) {
       const gameMap = new Map() 
       gameMap.set('gameDate', date.getFullYear() + '/' + (date.getMonth() + 1) + '/' + date.getDay())
       gameMap.set('guesses', [])
+      gameMap.set('timestamp', Date.now())
 
       console.log(gameMap.get('gameDate'))
 
@@ -56,7 +58,8 @@ router.get("/newgame", function(req, res) {
           response: 'go',
           opponent: customUsers.get(user),
           first: true,
-          gameDate: gameMap.get('gameDate')
+          gameDate: gameMap.get('gameDate'),
+          timestamp: gameMap.get('timestamp')
         }
       ])
     }
@@ -72,6 +75,7 @@ router.get("/addguess", function(req, res) {
   const guess = req.query.guess
 
   userGame.get(currentUser).get('guesses').push(guess)
+  userGame.get(currentUser).set('timestamp', +req.query.timestamp)
 
   console.log(guess)
 
@@ -93,7 +97,8 @@ router.get("/getguess", function(req, res) {
   res.json([
     {
       response: 'ok',
-      guesses: userGame.get(req.query.name).get('guesses')
+      guesses: userGame.get(req.query.name).get('guesses'),
+      timestamp: userGame.get(req.query.name).get('timestamp')
     }
   ])
 });
