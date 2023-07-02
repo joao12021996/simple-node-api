@@ -5,6 +5,7 @@ const fns = require('date-fns')
 
 const userWaitList = []
 const users = new Map()
+const userInfo = new Map()
 const customUsers = new Map()
 const userGame = new Map()
 
@@ -23,7 +24,8 @@ router.get("/newgame", function(req, res) {
         response: 'go',
         opponent: customUsers.get(users.get(currentUser)),
         gameDate: userGame.get(currentUser).get('gameDate'),
-        timestamp: userGame.get(currentUser).get('timestamp')
+        timestamp: userGame.get(currentUser).get('timestamp'),
+        country: userInfo.get(users.get(currentUser)).get('country')
       }
     ])
   }
@@ -31,6 +33,14 @@ router.get("/newgame", function(req, res) {
   if(!userWaitList.includes(currentUser)){
     userWaitList.push(currentUser)
     customUsers.set(currentUser, currentUserCustom)
+
+    userInfo.set(currentUser, new Map())
+
+    if(req.query.country === undefined || req.query.country === null){
+      userInfo.get(currentUser).set('country', '')
+    }else {
+      userInfo.get(currentUser).set('country', req.query.country)
+    }
   }
   
   for(let user of userWaitList){
@@ -59,7 +69,8 @@ router.get("/newgame", function(req, res) {
           opponent: customUsers.get(user),
           first: true,
           gameDate: gameMap.get('gameDate'),
-          timestamp: gameMap.get('timestamp')
+          timestamp: gameMap.get('timestamp'),
+          country: userInfo.get(user).get('country')
         }
       ])
     }
@@ -128,6 +139,7 @@ router.get("/endgame", function(req, res) {
   
   users.delete(currentUser)
   userGame.delete(currentUser)
+  userInfo.delete(currentUser)
 
   return res.json([
     { 
