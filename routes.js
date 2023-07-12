@@ -3,7 +3,8 @@ const wait = require("./json/wait");
 const ok = require("./json/ok");
 const fns = require('date-fns')
 
-const userWaitList = []
+const userWait = new Map()
+const userWaitListTimes = new Map()
 const users = new Map()
 const userInfo = new Map()
 const customUsers = new Map()
@@ -11,12 +12,37 @@ const userGame = new Map()
 
 const router = express.Router();
 
+setInterval(function(){
+
+}, 2* 60000)
+//every 2 min
+
+
+
 router.get("/newgame", function(req, res) { 
   console.log('newgame')
-  console.log(userWaitList)
+  console.log(userWait)
 
   const currentUser = req.query.name
   const currentUserCustom = req.query.customname
+  const gameMode = req.query.gamemode
+  const hardMode = req.query.hardmode
+  const gridHardMode = req.query.gridhardmode
+  const hiddenLetterMode = req.query.hiddenlettermode
+
+  var key = ''
+  if(gameMode){
+    key = 'team'
+  }
+  if(hardMode){
+    key = key + 'hardMode'
+  }
+  if(gridHardMode){
+    key = key + 'gridHardMode'
+  }
+  if(hiddenLetterMode){
+    key = key + 'hiddenLetterMode'
+  }
 
   if(users.get(currentUser) !== undefined){
     return res.json([
@@ -30,8 +56,13 @@ router.get("/newgame", function(req, res) {
     ])
   }
 
-  if(!userWaitList.includes(currentUser)){
-    userWaitList.push(currentUser)
+  if(!userWait.has(key)){
+    userWait.set(key, [])
+  }
+
+  if(!userWait.get(key).includes(currentUser)){
+    userWait.get(key).push(currentUser)
+    userWaitListTimes.set(currentUser, Date.now())
     customUsers.set(currentUser, currentUserCustom)
 
     userInfo.set(currentUser, new Map())
@@ -43,10 +74,12 @@ router.get("/newgame", function(req, res) {
     }
   }
   
-  for(let user of userWaitList){
+  for(let user of userWait.get(key)){
     if(user !== currentUser){
-      userWaitList.pop(user)
-      userWaitList.pop(currentUser)
+      userWait.get(key).pop(user)
+      userWait.get(key).pop(currentUser)
+      userWaitListTimes.delete(user)
+      userWaitListTimes.delete(currentUser)
 
       users.set(user, currentUser)
       users.set(currentUser, user)
@@ -119,7 +152,7 @@ router.get("/onlineplayers", function(req, res){
 
   return res.json([
     {
-      size: userWaitList.length
+      size: userWait.size()
     }
   ])
 })
@@ -128,6 +161,24 @@ router.get("/endgame", function(req, res) {
   console.log('endgame')
 
   const currentUser = req.query.name
+  const gameMode = req.query.gamemode
+  const hardMode = req.query.hardmode
+  const gridHardMode = req.query.gridhardmode
+  const hiddenLetterMode = req.query.hiddenlettermode
+
+  var key = ''
+  if(gameMode){
+    key = 'team'
+  }
+  if(hardMode){
+    key = key + 'hardMode'
+  }
+  if(gridHardMode){
+    key = key + 'gridHardMode'
+  }
+  if(hiddenLetterMode){
+    key = key + 'hiddenLetterMode'
+  }
 
   if(users.get(currentUser) === undefined){
     return res.json([
@@ -137,16 +188,22 @@ router.get("/endgame", function(req, res) {
     ])
   }
   
+  const opponent = users.get(currentUser)
+
   users.delete(currentUser)
   userGame.delete(currentUser)
   userInfo.delete(currentUser)
+  userWait.get(key).pop(currentUser)
+  users.delete(opponent)
+  userGame.delete(opponent)
+  userInfo.delete(opponent)
+  userWait.get(key).pop(opponent)
 
   return res.json([
     { 
       response: 'ok'
     }
   ])
-});
-
+})
 
 module.exports = router;
