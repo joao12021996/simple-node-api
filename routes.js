@@ -51,7 +51,8 @@ router.get("/newgame", function(req, res) {
         opponent: customUsers.get(users.get(currentUser)),
         gameDate: userGame.get(currentUser).get('gameDate'),
         timestamp: userGame.get(currentUser).get('timestamp'),
-        country: userInfo.get(users.get(currentUser)).get('country')
+        country: userInfo.get(users.get(currentUser)).get('country'),
+        customCode: userGame.get(currentUser).get('customCode')
       }
     ])
   }
@@ -89,6 +90,7 @@ router.get("/newgame", function(req, res) {
       gameMap.set('gameDate', date.getFullYear() + '/' + (date.getMonth() + 1) + '/' + date.getDay())
       gameMap.set('guesses', [])
       gameMap.set('timestamp', Date.now())
+      gameMap.set('customCode', Math.floor(100000000000 + Math.random() * 900000000000).toString())
 
       console.log(gameMap.get('gameDate'))
 
@@ -103,7 +105,8 @@ router.get("/newgame", function(req, res) {
           first: true,
           gameDate: gameMap.get('gameDate'),
           timestamp: gameMap.get('timestamp'),
-          country: userInfo.get(user).get('country')
+          country: userInfo.get(user).get('country'),
+          customCode: gameMap.get('customCode')
         }
       ])
     }
@@ -165,6 +168,7 @@ router.get("/endgame", function(req, res) {
   const hardMode = req.query.hardmode
   const gridHardMode = req.query.gridhardmode
   const hiddenLetterMode = req.query.hiddenlettermode
+  const customGame = req.query.customgame
 
   var key = ''
   if(gameMode){
@@ -178,6 +182,9 @@ router.get("/endgame", function(req, res) {
   }
   if(hiddenLetterMode){
     key = key + 'hiddenLetterMode'
+  }
+  if(customGame){
+    key = key + customGame
   }
 
   if(users.get(currentUser) === undefined){
