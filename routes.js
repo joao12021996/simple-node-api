@@ -29,6 +29,7 @@ router.get("/newgame", function(req, res) {
   const hardMode = req.query.hardmode
   const gridHardMode = req.query.gridhardmode
   const hiddenLetterMode = req.query.hiddenlettermode
+  const language = req.query.language
 
   var key = ''
   if(gameMode){
@@ -42,6 +43,9 @@ router.get("/newgame", function(req, res) {
   }
   if(hiddenLetterMode){
     key = key + 'hiddenLetterMode'
+  }
+  if(language){
+    key = key + language
   }
 
   if(users.get(currentUser) !== undefined){
