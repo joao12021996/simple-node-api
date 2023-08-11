@@ -73,12 +73,7 @@ router.get("/newgame", function(req, res) {
   }
 
   if(!userWait.get(key).includes(currentUser)){
-    for (let otherKey of userWait.keys()) {
-      userWait.get(otherKey).pop(currentUser)
-    }
-
     userWait.get(key).push(currentUser)
-    userWaitListTimes.set(currentUser, Date.now())
     customUsers.set(currentUser, currentUserCustom)
 
     userInfo.set(currentUser, new Map())
@@ -89,6 +84,8 @@ router.get("/newgame", function(req, res) {
       userInfo.get(currentUser).set('country', req.query.country)
     }
   }
+  
+  userWaitListTimes.set(currentUser, Date.now())
   
   for(let user of userWait.get(key)){
     if(user !== currentUser){
