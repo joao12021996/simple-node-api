@@ -17,12 +17,6 @@ setInterval(function(){
 }, 2* 60000)
 //every 2 min
 
-function removePlayer(user){
-  for (let [_, value] of userWait.entries()) {
-    value.pop(user)
-  }
-}
-
 function countPlayers(){
   total = 0
   for (let [_, value] of userWait.entries()) {
@@ -79,7 +73,9 @@ router.get("/newgame", function(req, res) {
   }
 
   if(!userWait.get(key).includes(currentUser)){
-    removePlayer(currentUser)
+    for (let [_, value] of userWait.entries()) {
+      value.pop(user)
+    }
 
     userWait.get(key).push(currentUser)
     userWaitListTimes.set(currentUser, Date.now())
