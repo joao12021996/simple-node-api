@@ -17,7 +17,20 @@ setInterval(function(){
 }, 2* 60000)
 //every 2 min
 
+function removePlayer(user){
+  for (let [_, value] of userWait.entries()) {
+    value.pop(user)
+  }
+}
 
+function countPlayers(){
+  total = 0
+  for (let [_, value] of userWait.entries()) {
+    total = total + value.size
+  }
+
+  return total
+}
 
 router.get("/newgame", function(req, res) { 
   console.log('newgame')
@@ -66,6 +79,8 @@ router.get("/newgame", function(req, res) {
   }
 
   if(!userWait.get(key).includes(currentUser)){
+    removePlayer(currentUser)
+
     userWait.get(key).push(currentUser)
     userWaitListTimes.set(currentUser, Date.now())
     customUsers.set(currentUser, currentUserCustom)
@@ -157,9 +172,33 @@ router.get("/getguess", function(req, res) {
 router.get("/onlineplayers", function(req, res){
   console.log('onlineplayers')
 
+  const gameMode = req.query.gamemode
+  const hardMode = req.query.hardmode
+  const gridHardMode = req.query.gridhardmode
+  const hiddenLetterMode = req.query.hiddenlettermode
+  const language = req.query.language
+
+  var key = ''
+  if(gameMode){
+    key = 'team'
+  }
+  if(hardMode){
+    key = key + 'hardMode'
+  }
+  if(gridHardMode){
+    key = key + 'gridHardMode'
+  }
+  if(hiddenLetterMode){
+    key = key + 'hiddenLetterMode'
+  }
+  if(language){
+    key = key + language
+  }
+
   return res.json([
     {
-      size: userWait.size()
+      subTotal: userWait.get(key).size(),
+      total: countPlayers()
     }
   ])
 })
