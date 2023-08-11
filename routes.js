@@ -73,8 +73,8 @@ router.get("/newgame", function(req, res) {
   }
 
   if(!userWait.get(key).includes(currentUser)){
-    for (let key of userWait.keys()) {
-      //userWait.get(key).pop(currentUser)
+    for (let otherKey of userWait.keys()) {
+      userWait.get(otherKey).pop(currentUser)
     }
 
     userWait.get(key).push(currentUser)
