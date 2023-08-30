@@ -1,7 +1,8 @@
 const express = require('express');
 const wait = require("./json/wait");
 const ok = require("./json/ok");
-const fns = require('date-fns')
+const fns = require('date-fns');
+const { gu } = require('date-fns/locale');
 
 const userWait = new Map()
 const userWaitListTimes = new Map()
@@ -101,6 +102,9 @@ router.get("/newgame", function(req, res) {
       const gameMap = new Map() 
       gameMap.set('gameDate', date.getFullYear() + '/' + (date.getMonth() + 1) + '/' + date.getDay())
       gameMap.set('guesses', [])
+      gameMap.set('guessesPlayer1', [])
+      gameMap.set('guessesPlayer2', [])
+      gameMap.set('player1', currentUser)
       gameMap.set('timestamp', Date.now())
       gameMap.set('customCode', Math.floor(100000000000 + Math.random() * 900000000000).toString())
 
@@ -136,6 +140,14 @@ router.get("/addguess", function(req, res) {
   userGame.get(currentUser).get('guesses').push(guess)
   userGame.get(currentUser).set('timestamp', +req.query.timestamp)
 
+  console.log(currentUser)
+  console.log(userGame.get(currentUser).get('player1'))
+  if(currentUser === userGame.get(currentUser).get('player1')){
+    userGame.get(currentUser).get('guessesPlayer1').push(guess)
+  } else {
+    userGame.get(currentUser).get('guessesPlayer2').push(guess)
+  }
+
   console.log(guess)
 
   res.json(ok);
@@ -157,6 +169,9 @@ router.get("/getguess", function(req, res) {
     {
       response: 'ok',
       guesses: userGame.get(req.query.name).get('guesses'),
+      player1: userGame.get(req.query.name).get('player1'),
+      guessesPlayer1: userGame.get(req.query.name).get('guessesPlayer1'),
+      guessesPlayer2: userGame.get(req.query.name).get('guessesPlayer2'),
       timestamp: userGame.get(req.query.name).get('timestamp')
     }
   ])
