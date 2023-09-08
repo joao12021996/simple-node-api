@@ -2,10 +2,8 @@ const express = require('express');
 const wait = require("./json/wait");
 const ok = require("./json/ok");
 const fns = require('date-fns');
-const { gu } = require('date-fns/locale');
 
-const userWait = new Map()
-const userWaitListTimes = new Map()
+var userWait = new Map()
 const users = new Map()
 const userInfo = new Map()
 const customUsers = new Map()
@@ -14,9 +12,9 @@ const userGame = new Map()
 const router = express.Router();
 
 setInterval(function(){
-
-}, 2* 60000)
-//every 2 min
+  userWait = new Map()
+}, 10000)
+//every 10 seconds
 
 function countPlayers(){
   total = 0
@@ -38,6 +36,7 @@ router.get("/newgame", function(req, res) {
   const gridHardMode = req.query.gridhardmode
   const hiddenLetterMode = req.query.hiddenlettermode
   const language = req.query.language
+  const customGame = req.query.customgame
 
   var key = ''
   if(gameMode){
@@ -54,6 +53,9 @@ router.get("/newgame", function(req, res) {
   }
   if(language){
     key = key + language
+  }
+  if(customGame){
+    key = key + customGame
   }
 
   if(users.get(currentUser) !== undefined){
@@ -85,15 +87,11 @@ router.get("/newgame", function(req, res) {
       userInfo.get(currentUser).set('country', req.query.country)
     }
   }
-  
-  userWaitListTimes.set(currentUser, Date.now())
-  
+    
   for(let user of userWait.get(key)){
     if(user !== currentUser){
       userWait.get(key).pop(user)
       userWait.get(key).pop(currentUser)
-      userWaitListTimes.delete(user)
-      userWaitListTimes.delete(currentUser)
 
       users.set(user, currentUser)
       users.set(currentUser, user)
