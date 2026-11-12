@@ -48,8 +48,11 @@ curl -1sLf https://dl.cloudsmith.io/public/caddy/stable/gpg.key | gpg --dearmor 
 curl -1sLf https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt > /etc/apt/sources.list.d/caddy-stable.list
 apt-get update
 apt-get install -y caddy
+# other apps on this droplet (e.g. the bb-bots relay) add their routes as files in sites.d
+mkdir -p /etc/caddy/sites.d
 cat > /etc/caddy/Caddyfile <<EOF
 $DOMAIN {
+  import /etc/caddy/sites.d/*.caddy
   # Spotle calls https://$DOMAIN/api/<route>; the server's routes have no /api
   handle_path /api/* {
     reverse_proxy localhost:1337
